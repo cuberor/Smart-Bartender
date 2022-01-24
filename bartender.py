@@ -1,6 +1,3 @@
-import gaugette.ssd1306
-import gaugette.platform
-import gaugette.gpio
 import time
 import sys
 import RPi.GPIO as GPIO
@@ -13,7 +10,6 @@ from PIL import ImageFont, ImageDraw, Image
 FONT = ImageFont.truetype("FreeMono.ttf", 15)
 I2CBUS = SMBus(1)
 
-from dotstar import Adafruit_DotStar
 from menu import MenuItem, Menu, Back, MenuContext, MenuDelegate
 from drinks import drink_list, drink_options
 
