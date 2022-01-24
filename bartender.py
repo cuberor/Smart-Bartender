@@ -229,7 +229,7 @@ class Bartender(MenuDelegate):
 		totalTime = pumpTimes[-1][1]
 
 		# Change the times to be relative to the previous not absolute
-		for i in range(1,len(pumpTimes)):
+		for i in range(len(pumpTimes)-1, 0, -1):
 			pumpTimes[i][1] -= pumpTimes[i-1][1]
 
 		print(pumpTimes)
