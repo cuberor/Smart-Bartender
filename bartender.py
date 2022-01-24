@@ -266,7 +266,7 @@ class Bartender(MenuDelegate):
 			self.running = True
 			self.menuContext.select()
 			print("Finished processing button press")
-			self.running = 2
+			self.running = False
 			print("Starting button timeout")
 
 	def run(self):
