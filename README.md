@@ -1,4 +1,6 @@
 # Smart Bartender - Remix by Danzibob (Originally by HackerShack)
+# Remixed again by Robatzen to fix two bugs related to pump times and false button triggers
+
 Cutting the threading and neo-pixel, and using an I2C OLED display to make this project just a little simpler
 
 **Requires [This OLED screen library](https://github.com/BLavery/lib_oled96) by [BLavery](https://github.com/BLavery)**
