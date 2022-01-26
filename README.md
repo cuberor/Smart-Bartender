@@ -5,7 +5,7 @@ Why spend lots of money going out for drinks when you can have your own smart pe
 Make sure you can connect a screen and keyboard to your Raspberry Pi. I like to use VNC to connect to the Pi. I created a [tutorial](https://www.youtube.com/watch?v=2iVK8dn-6x4) about how to set that up on a Mac.
 
 Make sure the following are installed:
-* Python 2.7 (should already be installed on most Raspberry Pi)
+* Python 3 (should already be installed on most Raspberry Pi)
 * [pip](https://www.raspberrypi.org/documentation/linux/software/python.md)
 
 ### Enable I2C
