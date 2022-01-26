@@ -6,7 +6,7 @@ Make sure you can connect a screen and keyboard to your Raspberry Pi. I like to 
 
 Make sure the following are installed:
 * Python 3 (should already be installed on most Raspberry Pi)
-* [pip](https://www.raspberrypi.org/documentation/linux/software/python.md)
+* [pip](https://www.raspberrypi.com/documentation/computers/os.html#pip)
 
 ### Enable I2C
 You'll need to enable I2C for the OLED screen to work properly. Typing the following command in the terminal will bring you to a configuration menu.
@@ -38,10 +38,16 @@ press `CRTL+X` then `y` followed by `Enter` to save and exit.
 
 ## Running the Code
 
-First, make sure to download this repository on your raspberry pi. Once you do, navigate to the downloaded folder in the terminal:
+First, make sure to download this repository on your raspberry pi.
+```
+sudo apt install git
+git clone https://github.com/R0BATZEN/Smart-Bartender.git
+```
+
+Once you do, navigate to the downloaded folder in the terminal:
 
 ```
-cd ~/path/to/directory
+cd Smart-Bartender
 ```
 
 and install the dependencies

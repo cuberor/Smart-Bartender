@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import time
 import sys
 import RPi.GPIO as GPIO
@@ -55,7 +57,7 @@ class Bartender(MenuDelegate):
 		for pump in self.pump_configuration.keys():
 			GPIO.setup(self.pump_configuration[pump]["pin"], GPIO.OUT, initial=GPIO.HIGH)
 
-		print "Done initializing"
+		print("Done initializing")
 
 	@staticmethod
 	def readPumpConfiguration():
@@ -179,7 +181,7 @@ class Bartender(MenuDelegate):
 		time.sleep(2);
 
 	def displayMenuItem(self, menuItem):
-		print menuItem.name
+		print(menuItem.name)
 		self.led.cls()
 		self.led.canvas.text((0,20),menuItem.name, font=FONT, fill=1)
 		self.led.display()
