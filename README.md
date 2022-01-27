@@ -68,6 +68,9 @@ You can start the bartender by running
 sudo python3 bartender.py
 ```
 
+If you run into `Segmentation Fault` errors at runtime try increasing the stack size with
+`ulimit -s` to find the current size and then increase it (try doubling) with `ulimit -s <new size>`.
+
 ### How it Works
 There are two files that support the bartender.py file:
 
