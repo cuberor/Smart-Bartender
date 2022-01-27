@@ -2,22 +2,22 @@
 Why spend lots of money going out for drinks when you can have your own smart personal bartender at your service right in your home?! This bartender is built from a Raspberry Pi 3 and some common DIY electronics.
 
 ## Prerequisites for the Raspberry Pi
-Make sure you can connect a screen and keyboard to your Raspberry Pi. I like to use VNC to connect to the Pi. I created a [tutorial](https://www.youtube.com/watch?v=2iVK8dn-6x4) about how to set that up on a Mac.
+Make sure you can SSH into the Pi or have otherwise access to the console.
 
 Make sure the following are installed:
 * Python 3 (should already be installed on most Raspberry Pi)
-* [pip](https://www.raspberrypi.com/documentation/computers/os.html#pip)
 
+* [pip](https://www.raspberrypi.com/documentation/computers/os.html#pip) for Python 3
+  `sudo apt install pip`
 ### Enable I2C
 You'll need to enable I2C for the OLED screen to work properly. Typing the following command in the terminal will bring you to a configuration menu.
 
 ```
-raspi-config 
+sudo raspi-config 
 ```
 
 Then navigate to `Interfacing Options` and select `I2C`. Make sure it's turned on and reboot.
 
-See this [article](https://www.raspberrypi.org/documentation/hardware/raspberrypi/i2c/) for more help if you need it.
 
 Now let's make sure i2c is also configured properly. Type
 
@@ -34,7 +34,12 @@ i2c-bcm2708
 i2c-dev
 ```
 
-press `CRTL+X` then `y` followed by `Enter` to save and exit.
+press `CRTL+X`, then `y`, followed by `Enter` to save and exit.
+
+Now, let's reboot the Pi to apply those changes:
+```
+sudo reboot
+```
 
 ## Running the Code
 
@@ -54,13 +59,13 @@ and install the dependencies
 
 ```
 sudo apt install libopenjp2-7-dev python3-smbus
-sudo pip install -r requirements.txt
+sudo pip3 install -r requirements.txt
 ```
 
 You can start the bartender by running
 
 ```
-sudo python bartender.py
+sudo python3 bartender.py
 ```
 
 ### How it Works
@@ -104,14 +109,14 @@ The pump configuration persists information about pumps and the liquids that the
 
 Each pump key needs to be unique. It is comprised of `name`, `pin`, and `value`. `name` is the display name shown to the user on the pump configuration menu, `pin` is the GPIO pin attached to the relay for that particular pump, and `value` is the current selected drink. `value` doesn't need to be set initially, but it will be changed once you select an option from the configuration menu.
 
-Our bartender only has 6 pumps, but you could easily use more by adding more pump config entries.
+My bartender only has 8 pumps, but you could easily use more by adding more pump config entries.
 
 ### A Note on Cleaning
 After you use the bartender, you'll want to flush out the pump tubes in order to avoid bacteria growth. There is an easy way to do this in the configuration menu. Hook all the tubes up to a water source, then navigate to `configure`->`clean` and press the select button. All pumps will turn on to flush the existing liquid from the tubes. I take the tubes out of the water source halfway through to remove all liquid from the pumps. *Note: make sure you have a glass under the funnel to catch the flushed out liquid.*
 
 
 ### Running at Startup
-You can configure the bartender to run at startup by starting the program from the `rc.local` file. First, make sure to get the path to the repository directory by running
+You can configure the bartender to run at startup by starting the program from the `rc.local` file. First, make sure to get the path to the current directory by running
 
 ```
 pwd
