@@ -53,6 +53,7 @@ cd Smart-Bartender
 and install the dependencies
 
 ```
+sudo apt install libopenjp2-7-dev python3-smbus
 sudo pip install -r requirements.txt
 ```
 
