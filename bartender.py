@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import os
 import time
 import sys
 import RPi.GPIO as GPIO
@@ -9,7 +9,7 @@ import traceback
 from lib_oled96 import ssd1306
 from smbus import SMBus
 from PIL import ImageFont, ImageDraw, Image
-FONT = ImageFont.truetype("FreeMono.ttf", 15)
+
 I2CBUS = SMBus(1)
 
 from menu import MenuItem, Menu, Back, MenuContext, MenuDelegate
@@ -21,15 +21,20 @@ SCREEN_WIDTH = 128
 SCREEN_HEIGHT = 64
 
 LEFT_BTN_PIN = 13
-LEFT_PIN_BOUNCE = 200
+LEFT_PIN_BOUNCE = 400
 
-RIGHT_BTN_PIN = 5
-RIGHT_PIN_BOUNCE = 600
+RIGHT_BTN_PIN = 26
+RIGHT_PIN_BOUNCE = 400
+
+SHUTDOWN_BTN_PIN = 20
+SHUTDOWN_PIN_BOUNCE = 400
 
 OLED_RESET_PIN = 15
 OLED_DC_PIN = 16
 
 FLOW_RATE = 60.0/100.0
+
+FONT = ImageFont.truetype("FreeMono.ttf", 15)
 
 class Bartender(MenuDelegate): 
 	def __init__(self):
@@ -41,13 +46,15 @@ class Bartender(MenuDelegate):
 
 		self.btn1Pin = LEFT_BTN_PIN
 		self.btn2Pin = RIGHT_BTN_PIN
+		self.btnShutdownPin = SHUTDOWN_BTN_PIN
 
-		# configure interrups for buttons
+		# configure inputs
 		GPIO.setup(self.btn1Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  
+		GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.btnShutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-		# Very important... This lets py-gaugette 'know' what pins to use in order to reset the display
-		self.led = ssd1306(I2CBUS) # Change rows & cols values depending on your display dimensions.
+		# configure screen
+		self.led = ssd1306(I2CBUS)
 		#logo = Image.open('pi_logo.png')
 		#self.led.canvas.bitmap((32, 0), logo, fill=0)
 		self.led.display()
@@ -72,6 +79,7 @@ class Bartender(MenuDelegate):
 		self.running = True
 		GPIO.add_event_detect(self.btn1Pin, GPIO.FALLING, callback=self.left_btn, bouncetime=LEFT_PIN_BOUNCE)  
 		GPIO.add_event_detect(self.btn2Pin, GPIO.FALLING, callback=self.right_btn, bouncetime=RIGHT_PIN_BOUNCE)
+		GPIO.add_event_detect(self.btnShutdownPin, GPIO.FALLING, callback=self.shutdown_btn, bouncetime=SHUTDOWN_PIN_BOUNCE)
 		time.sleep(1)
 		self.running = False
 
@@ -270,6 +278,14 @@ class Bartender(MenuDelegate):
 			print("Finished processing button press")
 			self.running = False
 			print("Starting button timeout")
+
+	def shutdown_btn(self, ctx):
+		print("SHUTDOWN_BTN pressed")
+		GPIO.cleanup()
+		self.led.cls()
+		self.led.canvas.text((0, 20), "Shutting down", font=FONT, fill=1)
+		self.led.display()
+		os.system("sudo shutdown -h now")
 
 	def run(self):
 		self.startInterrupts()
