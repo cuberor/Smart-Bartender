@@ -2,13 +2,14 @@
 Why spend lots of money going out for drinks when you can have your own smart personal bartender at your service right in your home?! This bartender is built from a Raspberry Pi 3 and some common DIY electronics.
 
 ## Prerequisites for the Raspberry Pi
-Make sure you can SSH into the Pi or have otherwise access to the console.
+You will need to SSH into the Pi or have otherwise access to the console.
 
 Make sure the following are installed:
-* Python 3 (should already be installed on most Raspberry Pi)
+* Python 3 (should already be installed on most Raspberry Pi). Check your version with `python -V`
 
 * [pip](https://www.raspberrypi.com/documentation/computers/os.html#pip) for Python 3
-  `sudo apt install pip`
+  `sudo apt install python3-pip`
+
 ### Enable I2C
 You'll need to enable I2C for the OLED screen to work properly. Typing the following command in the terminal will bring you to a configuration menu.
 
@@ -41,7 +42,7 @@ Now, let's reboot the Pi to apply those changes:
 sudo reboot
 ```
 
-## Running the Code
+##Installing the Software
 
 First, make sure to download this repository on your raspberry pi.
 ```
@@ -62,16 +63,39 @@ sudo apt install libopenjp2-7-dev python3-smbus
 sudo pip3 install -r requirements.txt
 ```
 
+##Starting the software
+
 You can start the bartender by running
 
 ```
-sudo python3 bartender.py
+python3 bartender.py
+```
+### Running at Startup
+You can configure the bartender to run at startup by starting the program from the `rc.local` file. First, make sure to get the path to the current directory by running
+
+```
+pwd
 ```
 
-If you run into `Segmentation Fault` errors at runtime try increasing the stack size with
-`ulimit -s` to find the current size and then increase it (try doubling) with `ulimit -s <new size>`.
+from the repository folder. Copy this to your clipboard.
 
-### How it Works
+Next, type
+
+```
+sudo nano /etc/rc.local
+```
+
+to open the rc.local file. Before the last line (`exit 0`), add the following two lines:
+
+```
+cd <your/pwd/path/here>       #e.g. cd /home/pi/Smart-Bartender
+sudo python bartender.py &
+```
+
+`your/pwd/path/here` should be replaced with the path you copied above. `sudo python bartender.py &` starts the bartender program in the background. Finally, press `CRTL+X` then `y` followed by `Enter` to save and exit. 
+
+If that doesn't work, you can consult this [guide](https://www.dexterindustries.com/howto/run-a-program-on-your-raspberry-pi-at-startup/) for more options.
+## Configuring Drinks and Recipes
 There are two files that support the bartender.py file:
 
 #### drinks.py
@@ -97,7 +121,7 @@ Holds all of the possible drink options. Drinks are filtered by the values in th
 {"name": "Gin", "value": "gin"}
 ```
 
-The name will be displayed on the pump configuration menu and the value will be assigned to the pump. The pump values will filter out drinks that the user can't make with the current pump configuration. 
+The `name` will be displayed on the pump configuration menu and the `value` will be assigned to the pump. The pump values will filter out drinks that the user can't make with the current pump configuration. 
 
 ### pump_config.json
 The pump configuration persists information about pumps and the liquids that they are assigned to. An pump entry looks like this:
@@ -115,31 +139,11 @@ Each pump key needs to be unique. It is comprised of `name`, `pin`, and `value`.
 My bartender only has 8 pumps, but you could easily use more by adding more pump config entries.
 
 ### A Note on Cleaning
-After you use the bartender, you'll want to flush out the pump tubes in order to avoid bacteria growth. There is an easy way to do this in the configuration menu. Hook all the tubes up to a water source, then navigate to `configure`->`clean` and press the select button. All pumps will turn on to flush the existing liquid from the tubes. I take the tubes out of the water source halfway through to remove all liquid from the pumps. *Note: make sure you have a glass under the funnel to catch the flushed out liquid.*
+After you use the bartender, you'll want to flush out the pump tubes in order to avoid bacteria growth.
+There is an easy way to do this in the configuration menu.
+Hook all the tubes up to a water source, then navigate to `configure`->`clean` and press the select button.
+All pumps will turn on to flush the existing liquid from the tubes.
 
+I take the tubes out of the water source halfway through to remove all liquid from the pumps.
 
-### Running at Startup
-You can configure the bartender to run at startup by starting the program from the `rc.local` file. First, make sure to get the path to the current directory by running
-
-```
-pwd
-```
-
-from the repository folder. Copy this to your clipboard.
-
-Next, type
-
-```
-sudo nano /etc/rc.local
-```
-
-to open the rc.local file. Before the last line, add the following two lines:
-
-```
-cd your/pwd/path/here
-sudo python bartender.py &
-```
-
-`your/pwd/path/here` should be replaced with the path you copied above. `sudo python bartender.py &` starts the bartender program in the background. Finally, press `CRTL+X` then `y` followed by `Enter` to save and exit. 
-
-If that doesn't work, you can consult this [guide](https://www.dexterindustries.com/howto/run-a-program-on-your-raspberry-pi-at-startup/) for more options.
+*Note: make sure you have a glass under the funnel to catch the flushed out liquid.*
