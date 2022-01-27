@@ -23,14 +23,11 @@ SCREEN_HEIGHT = 64
 LEFT_BTN_PIN = 13
 LEFT_PIN_BOUNCE = 400
 
-RIGHT_BTN_PIN = 26
+RIGHT_BTN_PIN = 19
 RIGHT_PIN_BOUNCE = 400
 
 SHUTDOWN_BTN_PIN = 20
 SHUTDOWN_PIN_BOUNCE = 400
-
-OLED_RESET_PIN = 15
-OLED_DC_PIN = 16
 
 FLOW_RATE = 60.0/100.0
 
@@ -256,10 +253,10 @@ class Bartender(MenuDelegate):
 			print("stopping {}".format(pin))
 
 		# show the main menu
-		self.menuContext.showMenu()
+		#self.menuContext.showMenu()
 
 		# sleep for a couple seconds to make sure the interrupts don't get triggered
-		time.sleep(2)
+		time.sleep(1)
 
 
 	def left_btn(self, ctx):
@@ -276,8 +273,8 @@ class Bartender(MenuDelegate):
 			self.running = True
 			self.menuContext.select()
 			print("Finished processing button press")
-			self.running = False
-			print("Starting button timeout")
+		self.running = False
+		#print("Starting button timeout")
 
 	def shutdown_btn(self, ctx):
 		print("SHUTDOWN_BTN pressed")
@@ -318,7 +315,3 @@ class Bartender(MenuDelegate):
 bartender = Bartender()
 bartender.buildMenu(drink_list, drink_options)
 bartender.run()
-
-
-
-
