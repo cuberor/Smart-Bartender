@@ -31,7 +31,7 @@ SHUTDOWN_PIN_BOUNCE = 400
 
 FLOW_RATE = 60.0/100.0
 
-FONT = ImageFont.truetype("FreeMono.ttf", 15)
+FONT = ImageFont.truetype("FreeSans.ttf", 15)
 
 class Bartender(MenuDelegate): 
 	def __init__(self):
