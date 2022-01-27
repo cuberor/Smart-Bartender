@@ -9,15 +9,6 @@ drink_list = [{
 		'prep': 'Shake and strain into a chilled cocktail glass.'
 	},
 	{
-		'name': 'TEST',
-		'ingredients': {
-			'whiteRum': 30,
-			'oj': 30,
-			'cola': 30
-		},
-		'prep': 'Shake with ice cubes. Strain into chilled cocktail glass.'
-	},
-	{
 		'name': 'Bacardi',
 		'ingredients': {
 			'whiteRum': 45.0,
