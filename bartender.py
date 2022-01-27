@@ -48,8 +48,8 @@ class Bartender(MenuDelegate):
 
 		# Very important... This lets py-gaugette 'know' what pins to use in order to reset the display
 		self.led = ssd1306(I2CBUS) # Change rows & cols values depending on your display dimensions.
-		logo = Image.open('pi_logo.png')
-		self.led.canvas.bitmap((32, 0), logo, fill=0)
+		#logo = Image.open('pi_logo.png')
+		#self.led.canvas.bitmap((32, 0), logo, fill=0)
 		self.led.display()
 
 		# load the pump configuration from file
@@ -277,7 +277,7 @@ class Bartender(MenuDelegate):
 		try:
 			try:
 				while True:
-					letter = raw_input(">")
+					letter = input(">")
 					if letter == "l":
 						self.left_btn(False)
 					if letter == "r":
