@@ -21,7 +21,7 @@ SCREEN_WIDTH = 128
 SCREEN_HEIGHT = 64
 
 LEFT_BTN_PIN = 13
-LEFT_PIN_BOUNCE = 500
+LEFT_PIN_BOUNCE = 400
 
 RIGHT_BTN_PIN = 19
 RIGHT_PIN_BOUNCE = 1000
@@ -199,7 +199,7 @@ class Bartender(MenuDelegate):
 	def startProgressBar(self,x=15,y=20):
 		start_time = time.time()
 		self.led.cls()
-		self.led.canvas.text((10,20),"Dispensing...", font=FONT, fill=1)
+		self.led.canvas.text((7,20),"Dispensing...", font=FONT, fill=1)
 
 	def sleepAndProgress(self, startTime, waitTime, totalTime, x=15, y=35):
 		localStartTime = time.time()
@@ -273,8 +273,8 @@ class Bartender(MenuDelegate):
 			self.running = True
 			self.menuContext.select()
 			print("Finished processing button press")
-		self.running = False
-		#print("Starting button timeout")
+			self.running = False
+			print("Starting button timeout")
 
 	def shutdown_btn(self, ctx):
 		print("SHUTDOWN_BTN pressed")
