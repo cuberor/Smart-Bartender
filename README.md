@@ -42,7 +42,7 @@ Now, let's reboot the Pi to apply those changes:
 sudo reboot
 ```
 
-##Installing the Software
+## Installing the Software
 
 First, make sure to download this repository on your raspberry pi.
 ```
@@ -63,7 +63,7 @@ sudo apt install libopenjp2-7-dev python3-smbus
 sudo pip3 install -r requirements.txt
 ```
 
-##Starting the software
+## Starting the software
 
 You can start the bartender by running
 
@@ -95,6 +95,7 @@ sudo python bartender.py &
 `your/pwd/path/here` should be replaced with the path you copied above. `sudo python bartender.py &` starts the bartender program in the background. Finally, press `CRTL+X` then `y` followed by `Enter` to save and exit. 
 
 If that doesn't work, you can consult this [guide](https://www.dexterindustries.com/howto/run-a-program-on-your-raspberry-pi-at-startup/) for more options.
+
 ## Configuring Drinks and Recipes
 There are two files that support the bartender.py file:
 
@@ -138,7 +139,7 @@ Each pump key needs to be unique. It is comprised of `name`, `pin`, and `value`.
 
 My bartender only has 8 pumps, but you could easily use more by adding more pump config entries.
 
-### A Note on Cleaning
+## A Note on Cleaning
 After you use the bartender, you'll want to flush out the pump tubes in order to avoid bacteria growth.
 There is an easy way to do this in the configuration menu.
 Hook all the tubes up to a water source, then navigate to `configure`->`clean` and press the select button.
