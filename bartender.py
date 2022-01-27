@@ -21,10 +21,10 @@ SCREEN_WIDTH = 128
 SCREEN_HEIGHT = 64
 
 LEFT_BTN_PIN = 13
-LEFT_PIN_BOUNCE = 400
+LEFT_PIN_BOUNCE = 200
 
 RIGHT_BTN_PIN = 19
-RIGHT_PIN_BOUNCE = 1000
+RIGHT_PIN_BOUNCE = 800
 
 SHUTDOWN_BTN_PIN = 20
 SHUTDOWN_PIN_BOUNCE = 400
@@ -33,7 +33,7 @@ FLOW_RATE = 60.0/100.0
 
 FONT = ImageFont.truetype("FreeSans.ttf", 15)
 
-class Bartender(MenuDelegate): 
+class Bartender(MenuDelegate):
 	def __init__(self):
 		self.running = False
 
@@ -46,9 +46,9 @@ class Bartender(MenuDelegate):
 		self.btnShutdownPin = SHUTDOWN_BTN_PIN
 
 		# configure inputs
-		GPIO.setup(self.btn1Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.setup(self.btnShutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.btn1Pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+		GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+		GPIO.setup(self.btnShutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 		# configure screen
 		self.led = ssd1306(I2CBUS)
@@ -74,11 +74,16 @@ class Bartender(MenuDelegate):
 
 	def startInterrupts(self):
 		self.running = True
-		GPIO.add_event_detect(self.btn1Pin, GPIO.FALLING, callback=self.left_btn, bouncetime=LEFT_PIN_BOUNCE)  
-		GPIO.add_event_detect(self.btn2Pin, GPIO.FALLING, callback=self.right_btn, bouncetime=RIGHT_PIN_BOUNCE)
-		GPIO.add_event_detect(self.btnShutdownPin, GPIO.FALLING, callback=self.shutdown_btn, bouncetime=SHUTDOWN_PIN_BOUNCE)
-		time.sleep(1)
+		GPIO.add_event_detect(self.btn1Pin, GPIO.RISING, callback=self.left_btn, bouncetime=LEFT_PIN_BOUNCE)
+		GPIO.add_event_detect(self.btn2Pin, GPIO.RISING, callback=self.right_btn, bouncetime=RIGHT_PIN_BOUNCE)
+		GPIO.add_event_detect(self.btnShutdownPin, GPIO.RISING, callback=self.shutdown_btn, bouncetime=SHUTDOWN_PIN_BOUNCE)
+		#time.sleep(0.1)
 		self.running = False
+
+	def stopInterrupts(self):
+		GPIO.remove_event_detect(self.btn1Pin)
+		GPIO.remove_event_detect(self.btn2Pin)
+		GPIO.remove_event_detect(self.btnShutdownPin)
 
 	def buildMenu(self, drink_list, drink_options):
 		# create a new main menu
@@ -199,7 +204,7 @@ class Bartender(MenuDelegate):
 	def startProgressBar(self,x=15,y=20):
 		start_time = time.time()
 		self.led.cls()
-		self.led.canvas.text((7,20),"Dispensing...", font=FONT, fill=1)
+		self.led.canvas.text((10,16),"Dispensing...", font=FONT, fill=1)
 
 	def sleepAndProgress(self, startTime, waitTime, totalTime, x=15, y=35):
 		localStartTime = time.time()
@@ -247,70 +252,49 @@ class Bartender(MenuDelegate):
 		GPIO.output([p[0] for p in pumpTimes], GPIO.LOW)
 		for p in pumpTimes:
 			pin, delay = p
-			if delay > 0: 
+			if delay > 0:
 				self.sleepAndProgress(startTime, delay, totalTime)
 			GPIO.output(pin, GPIO.HIGH)
 			print("stopping {}".format(pin))
 
-		# show the main menu
-		#self.menuContext.showMenu()
-
 		# sleep for a couple seconds to make sure the interrupts don't get triggered
-		time.sleep(1)
+		#time.sleep(2)
 
 
 	def left_btn(self, ctx):
 		print("LEFT_BTN pressed")
-		if not self.running:
-			self.running = True
-			self.menuContext.advance()
-			print("Finished processing button press")
-		self.running = False
+		self.stopInterrupts()
+		self.menuContext.advance()
+		self.startInterrupts()
 
 	def right_btn(self, ctx):
 		print("RIGHT_BTN pressed")
-		if not self.running:
-			self.running = True
-			self.menuContext.select()
-			print("Finished processing button press")
-			self.running = False
-			print("Starting button timeout")
+		self.stopInterrupts()
+		self.menuContext.select()
+		self.startInterrupts()
 
 	def shutdown_btn(self, ctx):
 		print("SHUTDOWN_BTN pressed")
+		self.stopInterrupts()
 		GPIO.cleanup()
 		self.led.cls()
-		self.led.canvas.text((0, 20), "Shutting down", font=FONT, fill=1)
+		self.led.canvas.text((5, 20), "Shutting down", font=FONT, fill=1)
 		self.led.display()
 		os.system("sudo shutdown -h now")
 
 	def run(self):
 		self.startInterrupts()
+
 		# main loop
 		try:
-			try:
-				while True:
-					letter = input(">")
-					if letter == "l":
-						self.left_btn(False)
-					if letter == "r":
-						self.right_btn(False)
-			except EOFError:
-				while True:
-					time.sleep(0.1)
-					if self.running not in (True,False):
-						self.running -= 0.1
-						if self.running == 0:
-							self.running = False
-							print("Finished button timeout")
+			while True:
+				time.sleep(0.1)
 
 		except KeyboardInterrupt:
 			GPIO.cleanup()       # clean up GPIO on CTRL+C exit
-		finally:
-			GPIO.cleanup()       # clean up GPIO on normal exit
+		GPIO.cleanup()           # clean up GPIO on normal exit
 
 		traceback.print_exc()
-
 
 bartender = Bartender()
 bartender.buildMenu(drink_list, drink_options)
