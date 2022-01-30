@@ -41,8 +41,7 @@ drink_list = [{
 			'whiskey': 45.0
 		},
 		'prep': 'Place sugar cube in old-fashioned glass and saturate with bitters,add a dash of plain water. Muddle until dissolve. Fill the glass with ice cubes and add whisky.',
-		'specials': ['2 dashes Angostura Bitters',
-'1 sugar cube']
+		'specials': ['2 dashes Angostura Bitters', '1 sugar cube']
 	},
 	{
 		'name': 'Tuxedo',
