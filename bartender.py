@@ -20,13 +20,13 @@ GPIO.setmode(GPIO.BCM)
 SCREEN_WIDTH = 128
 SCREEN_HEIGHT = 64
 
-LEFT_BTN_PIN = 13
+LEFT_BTN_PIN = 16
 LEFT_PIN_BOUNCE = 200
 
-RIGHT_BTN_PIN = 19
+RIGHT_BTN_PIN = 12
 RIGHT_PIN_BOUNCE = 800
 
-SHUTDOWN_BTN_PIN = 20
+SHUTDOWN_BTN_PIN = 26
 SHUTDOWN_PIN_BOUNCE = 400
 
 FLOW_RATE = 60.0/100.0
@@ -46,9 +46,9 @@ class Bartender(MenuDelegate):
 		self.btnShutdownPin = SHUTDOWN_BTN_PIN
 
 		# configure inputs
-		GPIO.setup(self.btn1Pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-		GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-		GPIO.setup(self.btnShutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+		GPIO.setup(self.btn1Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.btnShutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 		# configure screen
 		self.led = ssd1306(I2CBUS)
@@ -74,9 +74,9 @@ class Bartender(MenuDelegate):
 
 	def startInterrupts(self):
 		self.running = True
-		GPIO.add_event_detect(self.btn1Pin, GPIO.RISING, callback=self.left_btn, bouncetime=LEFT_PIN_BOUNCE)
-		GPIO.add_event_detect(self.btn2Pin, GPIO.RISING, callback=self.right_btn, bouncetime=RIGHT_PIN_BOUNCE)
-		GPIO.add_event_detect(self.btnShutdownPin, GPIO.RISING, callback=self.shutdown_btn, bouncetime=SHUTDOWN_PIN_BOUNCE)
+		GPIO.add_event_detect(self.btn1Pin, GPIO.FALLING, callback=self.left_btn, bouncetime=LEFT_PIN_BOUNCE)
+		GPIO.add_event_detect(self.btn2Pin, GPIO.FALLING, callback=self.right_btn, bouncetime=RIGHT_PIN_BOUNCE)
+		GPIO.add_event_detect(self.btnShutdownPin, GPIO.FALLING, callback=self.shutdown_btn, bouncetime=SHUTDOWN_PIN_BOUNCE)
 		#time.sleep(0.1)
 		self.running = False
 
