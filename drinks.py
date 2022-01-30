@@ -474,10 +474,6 @@ drink_options = [
 		"value": "tonic"
 	},
 	{
-		"name": "Coke",
-		"value": "coke"
-	},
-	{
 		"name": "Orange Juice",
 		"value": "oj"
 	},
@@ -581,19 +577,24 @@ drink_options = [
 		"name": "Creme de Cacao",
 		"value": "cremeCacao"
 	},
-	{
-		"name": "Grenadine",
-		"value": "grenadine"
-	},
 ]
 
 
 # Check for ingredients that we don 't have a record for
-if __name__ == "__main__":
+def main():
+	print()
+	print("===============================================================================")
+	print(" The following ingredients are mentioned in recipes but not in the drink list:")
+	print("===============================================================================")
 	found = []
 	drinks = [x["value"] for x in drink_options]
 	for D in drink_list:
 		for I in D["ingredients"]:
 			if I not in drinks and I not in found:
 				found.append(I)
-	print(I)
+
+	for F in found:
+		print("- ", F)
+
+if __name__ == "__main__":
+	main()
