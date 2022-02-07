@@ -100,11 +100,11 @@ sudo nano /etc/rc.local
 to open the rc.local file. Before the last line (`exit 0`), add the following two lines:
 
 ```
-cd <your/pwd/path/here>       #e.g. cd /home/pi/Smart-Bartender
-sudo python bartender.py &
+cd <your/pwd/path/here>       # cd /home/pi/Smart-Bartender/
+sudo python3 bartender.py &
 ```
 
-`your/pwd/path/here` should be replaced with the path you copied above. `sudo python bartender.py &` starts the bartender program in the background. Finally, press `CRTL+X` then `y` followed by `Enter` to save and exit. 
+`your/pwd/path/here` should be replaced with the path you copied above. `sudo python3 bartender.py &` starts the bartender program in the background. Finally, press `CRTL+X` then `y` followed by `Enter` to save and exit. 
 
 If that doesn't work, you can consult this [guide](https://www.dexterindustries.com/howto/run-a-program-on-your-raspberry-pi-at-startup/) for more options.
 
