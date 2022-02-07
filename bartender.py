@@ -18,7 +18,7 @@ I2CBUS = SMBus(1)
 # import busio
 # import adafruit_vl53l0x
 
-# i2c = busio.I2C(board.SCL, board.SDA)
+# I2C = busio.I2C(board.SCL, board.SDA)
 
 # set speed and accuracy of sensor (measuring time in nanoseconds)
 # SENSOR_ACCURACY = 200000	# =200ms
@@ -40,309 +40,296 @@ LEFT_PIN_BOUNCE = 200
 RIGHT_BTN_PIN = 12
 RIGHT_PIN_BOUNCE = 800
 
-# use / change these for a dedicated shutdown button
+### use / change these for a dedicated shutdown button ###
 SHUTDOWN_BTN_PIN = 26
 SHUTDOWN_PIN_BOUNCE = 400
 
-FLOW_RATE = 60.0/100.0
+FLOW_RATE = 60.0 / 100.0
 
 FONT = ImageFont.truetype("FreeSans.ttf", 15)
 
 class Bartender(MenuDelegate):
-	def __init__(self):
+    def __init__(self):
 
-		# set the oled screen height
-		self.screen_width = SCREEN_WIDTH
-		self.screen_height = SCREEN_HEIGHT
+        # set the oled screen height
+        self.screen_width = SCREEN_WIDTH
+        self.screen_height = SCREEN_HEIGHT
 
-		self.btn1Pin = LEFT_BTN_PIN
-		self.btn2Pin = RIGHT_BTN_PIN
-		
-		# only use with dedicated shutdown button
-		self.btnShutdownPin = SHUTDOWN_BTN_PIN
+        self.btn1Pin = LEFT_BTN_PIN
+        self.btn2Pin = RIGHT_BTN_PIN
 
-		############### Uncomment this for the ToF sensor ##################
-		# self.sensor = adafruit_vl53l0x.VL53L0X(i2c)
+        ### only use with dedicated shutdown button ###
+        self.btnShutdownPin = SHUTDOWN_BTN_PIN
 
-		# set speed and accuracy of sensor
-		# self.sensor.measurement_timing_budget = SENSOR_ACCURACY
-		# self.sensorThreshold = SENSOR_TRESHOLD
-		####################################################################
-		
-	
-		# configure inputs
-		GPIO.setup(self.btn1Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		
-		# only use with dedicated shutdown button
-		GPIO.setup(self.btnShutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        ############### Uncomment this for the ToF sensor ##################
+        # self.sensor = adafruit_vl53l0x.VL53L0X(I2C)
 
-		# configure screen
-		self.led = ssd1306(I2CBUS)
-		#logo = Image.open('pi_logo.png')
-		#self.led.canvas.bitmap((32, 0), logo, fill=0)
-		self.led.display()
+        # set speed and accuracy of sensor
+        # self.sensor.measurement_timing_budget = SENSOR_ACCURACY
+        # self.sensorThreshold = SENSOR_TRESHOLD
+        ####################################################################
 
-		# load the pump configuration from file
-		self.pump_configuration = Bartender.readPumpConfiguration()
-		for pump in self.pump_configuration.keys():
-			GPIO.setup(self.pump_configuration[pump]["pin"], GPIO.OUT, initial=GPIO.HIGH)
+        # configure inputs
+        GPIO.setup(self.btn1Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-		print("Done initializing")
+        ### only use with dedicated shutdown button ###
+        GPIO.setup(self.btnShutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-	@staticmethod
-	def readPumpConfiguration():
-		return json.load(open('pump_config.json'))
+        # configure screen
+        self.led = ssd1306(I2CBUS)
+        self.led.display()
 
-	@staticmethod
-	def writePumpConfiguration(configuration):
-		with open("pump_config.json", "w") as jsonFile:
-			json.dump(configuration, jsonFile)
+        # load the pump configuration from file
+        self.pump_configuration = Bartender.readPumpConfiguration()
+        for pump in self.pump_configuration.keys():
+            GPIO.setup(self.pump_configuration[pump]["pin"], GPIO.OUT, initial=GPIO.HIGH)
 
-	def startInterrupts(self):
-		GPIO.add_event_detect(self.btn1Pin, GPIO.FALLING, callback=self.left_btn, bouncetime=LEFT_PIN_BOUNCE)
-		GPIO.add_event_detect(self.btn2Pin, GPIO.FALLING, callback=self.right_btn, bouncetime=RIGHT_PIN_BOUNCE)
-		
-		# only use with dedicated shutdown button
-		GPIO.add_event_detect(self.btnShutdownPin, GPIO.FALLING, callback=self.shutdown, bouncetime=SHUTDOWN_PIN_BOUNCE)
+        print("Done initializing")
 
-	def stopInterrupts(self):
-		GPIO.remove_event_detect(self.btn1Pin)
-		GPIO.remove_event_detect(self.btn2Pin)
-		
-		# only use with dedicated shutdown button
-		GPIO.remove_event_detect(self.btnShutdownPin)
+    @staticmethod
+    def readPumpConfiguration():
+        return json.load(open('pump_config.json'))
 
-	def buildMenu(self, drink_list, drink_options):
-		# create a new main menu
-		m = Menu("Main Menu")
+    @staticmethod
+    def writePumpConfiguration(configuration):
+        with open("pump_config.json", "w") as jsonFile:
+            json.dump(configuration, jsonFile)
 
-		# add drink options
-		drink_opts = []
-		for d in drink_list:
-			drink_opts.append(MenuItem('drink', d["name"], {"ingredients": d["ingredients"]}))
+    def startInterrupts(self):
+        GPIO.add_event_detect(self.btn1Pin, GPIO.FALLING, callback=self.left_btn, bouncetime=LEFT_PIN_BOUNCE)
+        GPIO.add_event_detect(self.btn2Pin, GPIO.FALLING, callback=self.right_btn, bouncetime=RIGHT_PIN_BOUNCE)
 
-		configuration_menu = Menu("Configure")
+        ### only use with dedicated shutdown button ###
+        GPIO.add_event_detect(self.btnShutdownPin, GPIO.FALLING, callback=self.shutdown, bouncetime=SHUTDOWN_PIN_BOUNCE)
 
-		# add pump configuration options
-		pump_opts = []
-		for p in sorted(self.pump_configuration.keys()):
-			config = Menu(self.pump_configuration[p]["name"])
-			# add fluid options for each pump
-			for opt in drink_options:
-				# star the selected option
-				selected = "*" if opt["value"] == self.pump_configuration[p]["value"] else ""
-				config.addOption(MenuItem('pump_selection', opt["name"], {"key": p, "value": opt["value"], "name": opt["name"]}))
-			# add a back button so the user can return without modifying
-			config.addOption(Back("Back"))
-			config.setParent(configuration_menu)
-			pump_opts.append(config)
+    def stopInterrupts(self):
+        GPIO.remove_event_detect(self.btn1Pin)
+        GPIO.remove_event_detect(self.btn2Pin)
 
-		# add a back button to the configuration menu
-                configuration_menu.addOption(Back("Back"))
+        #### only use with dedicated shutdown button ###
+        GPIO.remove_event_detect(self.btnShutdownPin)
 
-                # adds an option that cleans all pumps to the configuration menu
-                configuration_menu.addOption(MenuItem('clean', 'Clean'))
+    def buildMenu(self, drink_list, drink_options):
+        # create a new main menu
+        m = Menu("Main Menu")
 
-                # adds an option to cleanly shut down the raspberry pi
-                configuration_menu.addOption(MenuItem('shutdown', 'Shutdown'))
+        # add drink options
+        drink_opts = []
+        for d in drink_list:
+            drink_opts.append(MenuItem('drink', d["name"], {"ingredients": d["ingredients"]}))
 
-                # add pump menus to the configuration menu
-                configuration_menu.addOptions(pump_opts)
-	
-		configuration_menu.setParent(m)
+        configuration_menu = Menu("Configure")
 
-		m.addOptions(drink_opts)
-		m.addOption(configuration_menu)
-		
-		# create a menu context
-		self.menuContext = MenuContext(m, self)
+        # add pump configuration options
+        pump_opts = []
+        for p in sorted(self.pump_configuration.keys()):
+            config = Menu(self.pump_configuration[p]["name"])
+            # add fluid options for each pump
+            for opt in drink_options:
+                # star the selected option
+                selected = "*" if opt["value"] == self.pump_configuration[p]["value"] else ""
+                config.addOption(
+                    MenuItem('pump_selection', opt["name"], {"key": p, "value": opt["value"], "name": opt["name"]}))
+            # add a back button so the user can return without modifying
+            config.addOption(Back("Back"))
+            config.setParent(configuration_menu)
+            pump_opts.append(config)
 
-	def filterDrinks(self, menu):
-		"""
+        # add a back button to the configuration menu
+        configuration_menu.addOption(Back("Back"))
+
+        # adds an option that cleans all pumps to the configuration menu
+        configuration_menu.addOption(MenuItem('clean', 'Clean'))
+
+        # adds an option to cleanly shut down the raspberry pi
+        configuration_menu.addOption(MenuItem('shutdown', 'Shutdown'))
+
+        # add pump menus to the configuration menu
+        configuration_menu.addOptions(pump_opts)
+
+        configuration_menu.setParent(m)
+
+        m.addOptions(drink_opts)
+        m.addOption(configuration_menu)
+
+        # create a menu context
+        self.menuContext = MenuContext(m, self)
+
+    def filterDrinks(self, menu):
+        """
 		Removes any drinks that can't be handled by the pump configuration
 		"""
-		for i in menu.options:
-			if (i.type == "drink"):
-				i.visible = False
-				ingredients = i.attributes["ingredients"]
-				presentIng = 0
-				for ing in ingredients.keys():
-					for p in self.pump_configuration.keys():
-						if (ing == self.pump_configuration[p]["value"]):
-							presentIng += 1
-				if (presentIng == len(ingredients.keys())):
-					i.visible = True
-			elif (i.type == "menu"):
-				self.filterDrinks(i)
+        for i in menu.options:
+            if (i.type == "drink"):
+                i.visible = False
+                ingredients = i.attributes["ingredients"]
+                presentIng = 0
+                for ing in ingredients.keys():
+                    for p in self.pump_configuration.keys():
+                        if (ing == self.pump_configuration[p]["value"]):
+                            presentIng += 1
+                if (presentIng == len(ingredients.keys())):
+                    i.visible = True
+            elif (i.type == "menu"):
+                self.filterDrinks(i)
 
-	def selectConfigurations(self, menu):
-		"""
+    def selectConfigurations(self, menu):
+        """
 		Adds a selection star to the pump configuration option
 		"""
-		for i in menu.options:
-			if (i.type == "pump_selection"):
-				key = i.attributes["key"]
-				if (self.pump_configuration[key]["value"] == i.attributes["value"]):
-					i.name = "%s %s" % (i.attributes["name"], "*")
-				else:
-					i.name = i.attributes["name"]
-			elif (i.type == "menu"):
-				self.selectConfigurations(i)
+        for i in menu.options:
+            if (i.type == "pump_selection"):
+                key = i.attributes["key"]
+                if (self.pump_configuration[key]["value"] == i.attributes["value"]):
+                    i.name = "%s %s" % (i.attributes["name"], "*")
+                else:
+                    i.name = i.attributes["name"]
+            elif (i.type == "menu"):
+                self.selectConfigurations(i)
 
-	def prepareForRender(self, menu):
-		self.filterDrinks(menu)
-		self.selectConfigurations(menu)
-		return True
+    def prepareForRender(self, menu):
+        self.filterDrinks(menu)
+        self.selectConfigurations(menu)
+        return True
 
-	def menuItemClicked(self, menuItem):
-		if (menuItem.type == "drink"):
-			self.makeDrink(menuItem.name, menuItem.attributes["ingredients"])
-			return True
-		elif(menuItem.type == "pump_selection"):
-			self.pump_configuration[menuItem.attributes["key"]]["value"] = menuItem.attributes["value"]
-			Bartender.writePumpConfiguration(self.pump_configuration)
-			return True
-		elif(menuItem.type == "clean"):
-			self.clean()
-			return True
-		elif (menuItem.type == "shutdown"):
-		    self.shutdown()
-		    return True
-		return False
+    def menuItemClicked(self, menuItem):
+        if (menuItem.type == "drink"):
+            self.makeDrink(menuItem.name, menuItem.attributes["ingredients"])
+            return True
+        elif (menuItem.type == "pump_selection"):
+            self.pump_configuration[menuItem.attributes["key"]]["value"] = menuItem.attributes["value"]
+            Bartender.writePumpConfiguration(self.pump_configuration)
+            return True
+        elif (menuItem.type == "clean"):
+            self.clean()
+            return True
+        elif (menuItem.type == "shutdown"):
+            self.shutdown()
+            return True
+        return False
 
-	def clean(self):
-		pins = []
+    def clean(self):
+        pins = []
 
-		for pump in self.pump_configuration.keys():
-			pins.append(self.pump_configuration[pump]["pin"])
+        for pump in self.pump_configuration.keys():
+            pins.append(self.pump_configuration[pump]["pin"])
 
-		self.startProgressBar()
-		GPIO.output(pins, GPIO.LOW)
-		self.sleepAndProgress(time.time(),20,20)
-		GPIO.output(pins, GPIO.HIGH)
+        self.startProgressBar()
+        GPIO.output(pins, GPIO.LOW)
+        self.sleepAndProgress(time.time(), 20, 20)
+        GPIO.output(pins, GPIO.HIGH)
 
-		# show the main menu
-		self.menuContext.showMenu()
+        # show the main menu
+        self.menuContext.showMenu()
 
-		# sleep for a couple seconds to make sure the interrupts don't get triggered
-		time.sleep(2);
+    def displayMenuItem(self, menuItem):
+        print(menuItem.name)
+        self.led.cls()
+        self.led.canvas.text((0, 20), menuItem.name, font=FONT, fill=1)
+        self.led.display()
 
-	def displayMenuItem(self, menuItem):
-		print(menuItem.name)
-		self.led.cls()
-		self.led.canvas.text((0,20),menuItem.name, font=FONT, fill=1)
-		self.led.display()
+    def startProgressBar(self, x=15, y=20):
+        start_time = time.time()
+        self.led.cls()
+        self.led.canvas.text((10, 16), "Dispensing...", font=FONT, fill=1)
 
-	def pour(self, pin, waitTime):
-		GPIO.output(pin, GPIO.LOW)
-		time.sleep(waitTime)
-		GPIO.output(pin, GPIO.HIGH)
+    def sleepAndProgress(self, startTime, waitTime, totalTime, x=15, y=35):
+        localStartTime = time.time()
+        height = 10
+        width = self.screen_width - 2 * x
 
-	def startProgressBar(self,x=15,y=20):
-		start_time = time.time()
-		self.led.cls()
-		self.led.canvas.text((10,16),"Dispensing...", font=FONT, fill=1)
+        while time.time() - localStartTime < waitTime:
+            progress = (time.time() - startTime) / totalTime
+            p_loc = int(progress * width)
+            self.led.canvas.rectangle((x, y, x + width, y + height), outline=255, fill=0)
+            self.led.canvas.rectangle((x + 1, y + 1, x + p_loc, y + height - 1), outline=255, fill=1)
+            try:
+                self.led.display()
+            except IOError:
+                print("Failed to talk to screen")
+            time.sleep(0.2)
 
-	def sleepAndProgress(self, startTime, waitTime, totalTime, x=15, y=35):
-		localStartTime = time.time()
-		height = 10
-		width = self.screen_width-2*x
+    def makeDrink(self, drink, ingredients):
 
-		while time.time() - localStartTime < waitTime:
-			progress = (time.time() - startTime)/totalTime
-			p_loc = int(progress*width)
-			self.led.canvas.rectangle((x,y,x+width,y+height), outline=255, fill=0)
-			self.led.canvas.rectangle((x+1,y+1,x+p_loc,y+height-1), outline=255, fill=1)
-			try:
-				self.led.display()
-			except IOError:
-				print("Failed to talk to screen")
-			time.sleep(0.2)
+        ##################### Uncomment this for the ToF sensor #####################
+        # distance = sensor.range
+        #
+        # if distance > sensorThreshold:
+        #	self.led.cls()
+        #	self.led.canvas.text((10, 16), "Glas missing", font=FONT, fill=1)
+        #	self.led.display()
+        #
+        #	time.sleep(2)
+        #	return
+        ############################################################################
 
-	def makeDrink(self, drink, ingredients):
-		
-		##################### Uncomment this for the ToF sensor #####################
-		# distance = sensor.range
-		#
-		# if distance > sensorThreshold:
-		#	self.led.cls()
-		#	self.led.canvas.text((10, 16), "Glas missing", font=FONT, fill=1)
-		#	self.led.display()
-		#
-		#	time.sleep(2)
-		#	return
-		############################################################################
+        # Parse the drink ingredients and create pouring data
+        pumpTimes = []
+        for ing in ingredients.keys():
+            for pump in self.pump_configuration.keys():
+                if ing == self.pump_configuration[pump]["value"]:
+                    waitTime = ingredients[ing] * FLOW_RATE
+                    pumpTimes.append([self.pump_configuration[pump]["pin"], waitTime])
 
-		# Parse the drink ingredients and create pouring data
-		pumpTimes = []
-		for ing in ingredients.keys():
-			for pump in self.pump_configuration.keys():
-				if ing == self.pump_configuration[pump]["value"]:
-					waitTime = ingredients[ing] * FLOW_RATE
-					pumpTimes.append([self.pump_configuration[pump]["pin"], waitTime])
+        # Put the drinks in the order they'll stop pouring
+        pumpTimes.sort(key=lambda x: x[1])
 
-		# Put the drinkjs in the order they'll stop pouring
-		pumpTimes.sort(key=lambda x: x[1])
+        # Note the total time required to pour the drink
+        totalTime = pumpTimes[-1][1]
 
-		# Note the total time required to pour the drink
-		totalTime = pumpTimes[-1][1]
+        # Change the times to be relative to the previous not absolute
+        for i in range(len(pumpTimes) - 1, 0, -1):
+            pumpTimes[i][1] -= pumpTimes[i - 1][1]
 
-		# Change the times to be relative to the previous not absolute
-		for i in range(len(pumpTimes)-1, 0, -1):
-			pumpTimes[i][1] -= pumpTimes[i-1][1]
+        print(pumpTimes)
 
-		print(pumpTimes)
+        self.startProgressBar()
+        startTime = time.time()
+        print("starting all")
+        GPIO.output([p[0] for p in pumpTimes], GPIO.LOW)
+        for p in pumpTimes:
+            pin, delay = p
+            if delay > 0:
+                self.sleepAndProgress(startTime, delay, totalTime)
+            GPIO.output(pin, GPIO.HIGH)
+            print("stopping {}".format(pin))
 
-		self.startProgressBar()
-		startTime = time.time()
-		print("starting all")
-		GPIO.output([p[0] for p in pumpTimes], GPIO.LOW)
-		for p in pumpTimes:
-			pin, delay = p
-			if delay > 0:
-				self.sleepAndProgress(startTime, delay, totalTime)
-			GPIO.output(pin, GPIO.HIGH)
-			print("stopping {}".format(pin))
+    def left_btn(self, ctx):
+        print("LEFT_BTN pressed")
+        self.stopInterrupts()
+        self.menuContext.advance()
+        self.startInterrupts()
 
-		# sleep for a couple seconds to make sure the interrupts don't get triggered
-		#time.sleep(2)
+    def right_btn(self, ctx):
+        print("RIGHT_BTN pressed")
+        self.stopInterrupts()
+        self.menuContext.select()
+        self.startInterrupts()
 
+    def shutdown(self):
+        print("SHUTDOWN_BTN pressed")
+        self.stopInterrupts()
+        GPIO.cleanup()
+        self.led.cls()
+        self.led.canvas.text((5, 20), "Shut down in 5s", font=FONT, fill=1)
+        self.led.display()
+        os.system("sudo shutdown -h now")
 
-	def left_btn(self, ctx):
-		print("LEFT_BTN pressed")
-		self.stopInterrupts()
-		self.menuContext.advance()
-		self.startInterrupts()
+    def run(self):
+        self.startInterrupts()
 
-	def right_btn(self, ctx):
-		print("RIGHT_BTN pressed")
-		self.stopInterrupts()
-		self.menuContext.select()
-		self.startInterrupts()
+        # main loop
+        try:
+            while True:
+                time.sleep(0.1)
 
-	def shutdown(self):
-		print("SHUTDOWN_BTN pressed")
-		self.stopInterrupts()
-		GPIO.cleanup()
-		self.led.cls()
-		self.led.canvas.text((5, 20), "Shutting down", font=FONT, fill=1)
-		self.led.display()
-		os.system("sudo shutdown -h now")
+        except KeyboardInterrupt:
+            GPIO.cleanup()  # clean up GPIO on CTRL+C exit
+        GPIO.cleanup()  # clean up GPIO on normal exit
 
-	def run(self):
-		self.startInterrupts()
+        traceback.print_exc()
 
-		# main loop
-		try:
-			while True:
-				time.sleep(0.1)
-
-		except KeyboardInterrupt:
-			GPIO.cleanup()       # clean up GPIO on CTRL+C exit
-		GPIO.cleanup()           # clean up GPIO on normal exit
-
-		traceback.print_exc()
 
 bartender = Bartender()
 bartender.buildMenu(drink_list, drink_options)
