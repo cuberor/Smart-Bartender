@@ -4,7 +4,7 @@
 * removed multithreading for pumping
 * changed the way the progress bar is animated
 
-## Changes made in this fork compared to original (HackerShack)
+## Changes made in this fork compared to upstream fork (Danzibob)
 * fixed false button triggers using interupts
 * added an option to safely shut down the Pi
 * added optional ToF sensor to detect the presence of a glass
