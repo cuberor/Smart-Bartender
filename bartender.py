@@ -331,6 +331,11 @@ class Bartender(MenuDelegate):
         traceback.print_exc()
 
 
-bartender = Bartender()
-bartender.buildMenu(drink_list, drink_options)
-bartender.run()
+def main():
+    bartender = Bartender()
+    bartender.buildMenu(drink_list, drink_options)
+    bartender.run()
+
+
+if __name__ == "__main__":
+    main()
