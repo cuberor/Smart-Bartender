@@ -445,6 +445,58 @@ drink_list = [{
 
 drink_options = [
 	{
+		"name": "Campari",
+		"value": "campari"
+	},
+	{
+		"name": "Ginger Ale",
+		"value": "gingerAle"
+	},
+	{
+		"name": "Egg Yolk",
+		"value": "eggYolk"
+	},
+	{
+		"name": "Coffee Liqueur",
+		"value": "coffeeLiqueur"
+	},
+	{
+		"name": "Galliano",
+		"value": "galliano"
+	},
+	{
+		"name": "Cherry Liqueur",
+		"value": "cherryLiqueur"
+	},
+	{
+		"name": "Peach Puree",
+		"value": "peachPuree"
+	},
+	{
+		"name": "Cream",
+		"value": "cream"
+	},
+	{
+		"name": "Baileys",
+		"value": "baileys"
+	},
+	{
+		"name": "Amaretto",
+		"value": "amaretto"
+	},
+	{
+		"name": "Aperol",
+		"value": "aperol"
+	},
+	{
+		"name": "Blackberry Liqueur",
+		"value": "blackberryLiqueur"
+	},
+	{
+		"name": "Raspberry Liqueur",
+		"value": "raspberryLiqueur"
+	},
+	{
 		"name": "Gin",
 		"value": "gin"
 	},
@@ -471,6 +523,10 @@ drink_options = [
 	{
 		"name": "Tonic Water",
 		"value": "tonic"
+	},
+	{
+		"name": "Whisky",
+		"value": "whisky"
 	},
 	{
 		"name": "Orange Juice",
