@@ -70,6 +70,10 @@ and install the dependencies
 sudo apt install libopenjp2-7-dev python3-smbus
 sudo pip3 install -r requirements.txt
 ```
+### (Optional) Install the ToF sensor
+Use this [manual](https://learn.adafruit.com/adafruit-vl53l0x-micro-lidar-distance-sensor-breakout/python-circuitpython) to install the relevant software for the Time of Flight Sensor.
+
+Then also make sure to uncomment all the lines in `bartender.py` to enable the sensor. You might need to tweak the threshold value to make sure your glass is detected correctly.
 
 ## Starting the software
 
