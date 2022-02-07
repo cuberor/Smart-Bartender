@@ -12,6 +12,20 @@ from PIL import ImageFont, ImageDraw, Image
 
 I2CBUS = SMBus(1)
 
+############### Uncomment this for the ToF sensor ##################
+# imports for ToF Sensor
+# import board
+# import busio
+# import adafruit_vl53l0x
+
+# i2c = busio.I2C(board.SCL, board.SDA)
+
+# set speed and accuracy of sensor (measuring time in nanoseconds)
+# SENSOR_ACCURACY = 200000	# =200ms
+# set threshold for maximum distance to detect a glass (distance from sensor in mm)
+# SENSOR_THRESHOLD = 100	# =10cm
+####################################################################
+
 from menu import MenuItem, Menu, Back, MenuContext, MenuDelegate
 from drinks import drink_list, drink_options
 
@@ -47,6 +61,15 @@ class Bartender(MenuDelegate):
 		# only use with dedicated shutdown button
 		self.btnShutdownPin = SHUTDOWN_BTN_PIN
 
+		############### Uncomment this for the ToF sensor ##################
+		# self.sensor = adafruit_vl53l0x.VL53L0X(i2c)
+
+		# set speed and accuracy of sensor
+		# self.sensor.measurement_timing_budget = SENSOR_ACCURACY
+		# self.sensorThreshold = SENSOR_TRESHOLD
+		####################################################################
+		
+	
 		# configure inputs
 		GPIO.setup(self.btn1Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 		GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -238,8 +261,18 @@ class Bartender(MenuDelegate):
 			time.sleep(0.2)
 
 	def makeDrink(self, drink, ingredients):
-		# cancel any button presses while the drink is being made
-		self.running = True
+		
+		##################### Uncomment this for the ToF sensor #####################
+		# distance = sensor.range
+		#
+		# if distance > sensorThreshold:
+		#	self.led.cls()
+		#	self.led.canvas.text((10, 16), "Glas missing", font=FONT, fill=1)
+		#	self.led.display()
+		#
+		#	time.sleep(2)
+		#	return
+		############################################################################
 
 		# Parse the drink ingredients and create pouring data
 		pumpTimes = []
