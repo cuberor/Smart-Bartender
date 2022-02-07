@@ -26,6 +26,7 @@ LEFT_PIN_BOUNCE = 200
 RIGHT_BTN_PIN = 12
 RIGHT_PIN_BOUNCE = 800
 
+# use / change these for a dedicated shutdown button
 SHUTDOWN_BTN_PIN = 26
 SHUTDOWN_PIN_BOUNCE = 400
 
@@ -35,7 +36,6 @@ FONT = ImageFont.truetype("FreeSans.ttf", 15)
 
 class Bartender(MenuDelegate):
 	def __init__(self):
-		self.running = False
 
 		# set the oled screen height
 		self.screen_width = SCREEN_WIDTH
@@ -43,11 +43,15 @@ class Bartender(MenuDelegate):
 
 		self.btn1Pin = LEFT_BTN_PIN
 		self.btn2Pin = RIGHT_BTN_PIN
+		
+		# only use with dedicated shutdown button
 		self.btnShutdownPin = SHUTDOWN_BTN_PIN
 
 		# configure inputs
 		GPIO.setup(self.btn1Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 		GPIO.setup(self.btn2Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		
+		# only use with dedicated shutdown button
 		GPIO.setup(self.btnShutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 		# configure screen
@@ -73,16 +77,17 @@ class Bartender(MenuDelegate):
 			json.dump(configuration, jsonFile)
 
 	def startInterrupts(self):
-		self.running = True
 		GPIO.add_event_detect(self.btn1Pin, GPIO.FALLING, callback=self.left_btn, bouncetime=LEFT_PIN_BOUNCE)
 		GPIO.add_event_detect(self.btn2Pin, GPIO.FALLING, callback=self.right_btn, bouncetime=RIGHT_PIN_BOUNCE)
+		
+		# only use with dedicated shutdown button
 		GPIO.add_event_detect(self.btnShutdownPin, GPIO.FALLING, callback=self.shutdown_btn, bouncetime=SHUTDOWN_PIN_BOUNCE)
-		#time.sleep(0.1)
-		self.running = False
 
 	def stopInterrupts(self):
 		GPIO.remove_event_detect(self.btn1Pin)
 		GPIO.remove_event_detect(self.btn2Pin)
+		
+		# only use with dedicated shutdown button
 		GPIO.remove_event_detect(self.btnShutdownPin)
 
 	def buildMenu(self, drink_list, drink_options):
@@ -110,16 +115,23 @@ class Bartender(MenuDelegate):
 			config.setParent(configuration_menu)
 			pump_opts.append(config)
 
-		# add pump menus to the configuration menu
-		configuration_menu.addOptions(pump_opts)
 		# add a back button to the configuration menu
-		configuration_menu.addOption(Back("Back"))
-		# adds an option that cleans all pumps to the configuration menu
-		configuration_menu.addOption(MenuItem('clean', 'Clean'))
+                configuration_menu.addOption(Back("Back"))
+
+                # adds an option that cleans all pumps to the configuration menu
+                configuration_menu.addOption(MenuItem('clean', 'Clean'))
+
+                # adds an option to cleanly shut down the raspberry pi
+                configuration_menu.addOption(MenuItem('shutdown', 'Shutdown'))
+
+                # add pump menus to the configuration menu
+                configuration_menu.addOptions(pump_opts)
+	
 		configuration_menu.setParent(m)
 
 		m.addOptions(drink_opts)
 		m.addOption(configuration_menu)
+		
 		# create a menu context
 		self.menuContext = MenuContext(m, self)
 
@@ -171,6 +183,9 @@ class Bartender(MenuDelegate):
 		elif(menuItem.type == "clean"):
 			self.clean()
 			return True
+		elif (menuItem.type == "shutdown"):
+		    self.shutdown()
+		    return True
 		return False
 
 	def clean(self):
@@ -273,7 +288,7 @@ class Bartender(MenuDelegate):
 		self.menuContext.select()
 		self.startInterrupts()
 
-	def shutdown_btn(self, ctx):
+	def shutdown(self):
 		print("SHUTDOWN_BTN pressed")
 		self.stopInterrupts()
 		GPIO.cleanup()
