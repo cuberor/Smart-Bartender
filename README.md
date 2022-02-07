@@ -1,5 +1,13 @@
 # Smart Bartender
-Why spend lots of money going out for drinks when you can have your own smart personal bartender at your service right in your home?! This bartender is built from a Raspberry Pi 3 and some common DIY electronics.
+## Changes made in this fork compared to original (HackerShack)
+* changed the screen and it's library from SPI to I2C
+* removed multithreading for pumping
+* changed the way the progress bar is animated
+
+## Changes made in this fork compared to original (HackerShack)
+* fixed false button triggers using interupts
+* added an option to safely shut down the Pi
+* added optional ToF sensor to detect the presence of a glass
 
 ## Prerequisites for the Raspberry Pi
 You will need to SSH into the Pi or have otherwise access to the console.
