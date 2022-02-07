@@ -81,7 +81,7 @@ class Bartender(MenuDelegate):
 		GPIO.add_event_detect(self.btn2Pin, GPIO.FALLING, callback=self.right_btn, bouncetime=RIGHT_PIN_BOUNCE)
 		
 		# only use with dedicated shutdown button
-		GPIO.add_event_detect(self.btnShutdownPin, GPIO.FALLING, callback=self.shutdown_btn, bouncetime=SHUTDOWN_PIN_BOUNCE)
+		GPIO.add_event_detect(self.btnShutdownPin, GPIO.FALLING, callback=self.shutdown, bouncetime=SHUTDOWN_PIN_BOUNCE)
 
 	def stopInterrupts(self):
 		GPIO.remove_event_detect(self.btn1Pin)
