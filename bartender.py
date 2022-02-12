@@ -8,7 +8,7 @@ import traceback
 
 from lib_oled96 import ssd1306
 from smbus import SMBus
-from PIL import ImageFont, ImageDraw, Image
+from PIL import ImageFont, Image
 
 I2CBUS = SMBus(1)
 
