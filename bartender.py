@@ -66,7 +66,7 @@ class Bartender(MenuDelegate):
 
         # set speed and accuracy of sensor
         # self.sensor.measurement_timing_budget = SENSOR_ACCURACY
-        # self.sensorThreshold = SENSOR_TRESHOLD
+        # self.sensorThreshold = SENSOR_THRESHOLD
         ####################################################################
 
         # configure inputs
@@ -214,6 +214,19 @@ class Bartender(MenuDelegate):
         return False
 
     def clean(self):
+
+        ##################### Uncomment this for the ToF sensor #####################
+        # distance = sensor.range
+        #
+        # if distance > self.sensorThreshold:
+        #	self.led.cls()
+        #	self.led.canvas.text((10, 20), "Glas missing", font=FONT, fill=1)
+        #	self.led.display()
+        #
+        #	time.sleep(2)
+        #	return
+        ############################################################################
+
         pins = []
 
         for pump in self.pump_configuration.keys():
@@ -221,24 +234,21 @@ class Bartender(MenuDelegate):
 
         self.startProgressBar()
         GPIO.output(pins, GPIO.LOW)
-        self.sleepAndProgress(time.time(), 20, 20)
+        self.sleepAndProgress(time.time(), 10, 10)
         GPIO.output(pins, GPIO.HIGH)
-
-        # show the main menu
-        self.menuContext.showMenu()
 
     def displayMenuItem(self, menuItem):
         print(menuItem.name)
         self.led.cls()
-        self.led.canvas.text((0, 20), menuItem.name, font=FONT, fill=1)
+        self.led.canvas.text((10, 20), menuItem.name, font=FONT, fill=1)
         self.led.display()
 
     def startProgressBar(self, x=15, y=20):
         start_time = time.time()
         self.led.cls()
-        self.led.canvas.text((10, 16), "Dispensing...", font=FONT, fill=1)
+        self.led.canvas.text((22, 15), "Dispensing...", font=FONT, fill=1)
 
-    def sleepAndProgress(self, startTime, waitTime, totalTime, x=15, y=35):
+    def sleepAndProgress(self, startTime, waitTime, totalTime, x=20, y=37):
         localStartTime = time.time()
         height = 10
         width = self.screen_width - 2 * x
@@ -259,9 +269,9 @@ class Bartender(MenuDelegate):
         ##################### Uncomment this for the ToF sensor #####################
         # distance = sensor.range
         #
-        # if distance > sensorThreshold:
+        # if distance > self.sensorThreshold:
         #	self.led.cls()
-        #	self.led.canvas.text((10, 16), "Glas missing", font=FONT, fill=1)
+        #	self.led.canvas.text((22, 20), "Glas missing", font=FONT, fill=1)
         #	self.led.display()
         #
         #	time.sleep(2)
@@ -316,7 +326,7 @@ class Bartender(MenuDelegate):
         self.stopInterrupts()
         GPIO.cleanup()
         self.led.cls()
-        self.led.canvas.text((5, 20), "Shut down in 5s", font=FONT, fill=1)
+        self.led.canvas.text((5, 20), "Shutting down", font=FONT, fill=1)
         self.led.display()
         os.system("sudo shutdown -h now")
 
