@@ -220,7 +220,7 @@ class Bartender(MenuDelegate):
         #
         # if distance > self.sensorThreshold:
         #	self.led.cls()
-        #	self.led.canvas.text((10, 20), "Glas missing", font=FONT, fill=1)
+        #	self.led.canvas.text((10, 20), "Glass missing", font=FONT, fill=1)
         #	self.led.display()
         #
         #	time.sleep(2)
@@ -271,7 +271,7 @@ class Bartender(MenuDelegate):
         #
         # if distance > self.sensorThreshold:
         #	self.led.cls()
-        #	self.led.canvas.text((22, 20), "Glas missing", font=FONT, fill=1)
+        #	self.led.canvas.text((22, 20), "Glass missing", font=FONT, fill=1)
         #	self.led.display()
         #
         #	time.sleep(2)
