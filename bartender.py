@@ -76,9 +76,13 @@ class Bartender(MenuDelegate):
         ### only use with dedicated shutdown button ###
         GPIO.setup(self.btnShutdownPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        # configure screen
+        # configure screen and show boot logo
         self.led = ssd1306(I2CBUS)
+        logo = Image.open('logo.png')
+        self.led.canvas.bitmap((0, 0), logo, fill=1)
         self.led.display()
+        # sleep to show boot logo for 4 seconds
+        time.sleep(4)
 
         # load the pump configuration from file
         self.pump_configuration = Bartender.readPumpConfiguration()
