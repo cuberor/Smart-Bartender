@@ -123,7 +123,7 @@ class Bartender(MenuDelegate):
         for d in drink_list:
             drink_opts.append(MenuItem('drink', d["name"], {"ingredients": d["ingredients"]}))
 
-        configuration_menu = Menu("Configure")
+        configuration_menu = Menu("! Wartung !")
 
         # add pump configuration options
         pump_opts = []
@@ -148,6 +148,9 @@ class Bartender(MenuDelegate):
 
         # adds an option to cleanly shut down the raspberry pi
         configuration_menu.addOption(MenuItem('shutdown', 'Shutdown'))
+
+        # adds an option to reboot the raspberry pi
+        configuration_menu.addOption(MenuItem('reboot', 'Reboot'))
 
         # add pump menus to the configuration menu
         configuration_menu.addOptions(pump_opts)
@@ -326,9 +329,21 @@ class Bartender(MenuDelegate):
         self.stopInterrupts()
         GPIO.cleanup()
         self.led.cls()
-        self.led.canvas.text((5, 20), "Shutting down", font=FONT, fill=1)
+        self.led.canvas.text((5, 20), "Shutting down...", font=FONT, fill=1)
         self.led.display()
         os.system("sudo shutdown -h now")
+
+    def reboot(self):
+        print("REBOOT_BTN pressed")
+        self.stopInterrupts()
+        GPIO.cleanup()
+
+        self.led.cls()
+
+        self.led.canvas.text((5, 20), "Rebooting...", font=FONT, fill=1)
+        self.led.display()
+
+        os.system("sudo reboot")
 
     def run(self):
         self.startInterrupts()
